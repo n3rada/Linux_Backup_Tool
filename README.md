@@ -13,7 +13,15 @@ $sudo ./backup.sh personal /mnt/Datas/
 >- Create a "some/dir/.backUp/Arch-personal-(date).tar.gz" file
 
 $sudo ./backup.sh encrypt personal /mnt/Datas/
->- Encrypt the file (And check if it exists or not)
+>- Encrypt the file
+
+
+## Other things
+The password is entered in clear text in the backup creation file.
+I don't care because the ".sh" file is stored in a hard drive encrypted by LUKS.
+
+
+I am open to any changes and suggestions for improvement.
 
 
 **Copyright (c) @n3rada **
