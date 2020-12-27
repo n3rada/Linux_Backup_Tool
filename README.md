@@ -1,5 +1,4 @@
 # backupTool
-======
 Backup script written in bash for my system (Arch Linux) and personal datas.
 
 ## Project history
@@ -11,7 +10,7 @@ Backup script written in bash for my system (Arch Linux) and personal datas.
 Here is a script to save the desired data if a .backUp folder is present in the removable disk.
 
 $sudo ./backup.sh personal /mnt/Datas/
--> Create a "some/dir/.backUp/Arch-personal-(date).tar.gz" file
+>- Create a "some/dir/.backUp/Arch-personal-(date).tar.gz" file
 
 $sudo ./backup.sh encrypt personal /mnt/Datas/
 >- Encrypt the file (And check if it exists or not)
