@@ -59,7 +59,7 @@ media=/run/media/$(logname)/
 execDir=$PWD
 from=$2
 
-password="ysosly4ZKYBT6D6FGgExThqVLdjIzj"
+password="yourpassword"
 
 
 # Scan to see if good hardrive are plugged
