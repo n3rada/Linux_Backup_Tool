@@ -54,7 +54,7 @@ backupDir=".backUp"
 date=$(date +%F)
 distro=$(cat /etc/*-release | grep "DISTRIB_ID" | awk -F "=" '{print $2}') #e.g mine is Arch
 
-media=/run/media/$(logname)/
+media=/run/media/
 
 execDir=$PWD
 from=$2
@@ -67,6 +67,7 @@ cd $media
 
 # If no hardrive are plugged, then too bad, next time !
 if [[ ! $(ls) ]] ; then
+    echo "No hardrive are plugged."
     exit 0
 fi
 
