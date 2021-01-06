@@ -11,10 +11,58 @@
 # !! Don't forget to use the exclude-list.txt !!
 #
 #--- By n3rada, free to use
-#--- December 2020
+#--- January 2021
 #####################################################
+clear
+############### 
+### Functions #
+###############
+confirm()
+{
+    read -r -p "${1} [y/N] " response
 
+    case "$response" in
+        [yY][eE][sS]|[yY]) 
+            true
+            ;;
+        *)
+            false
+            ;;
+    esac
+}
 
+# Generated with https://passwordsgenerator.net/
+password="Zc5uWBKc4LqsA2gZ"
+
+encrypt()
+{
+    echo "Encrypting $1 ..."
+    #From version 2 of GPG, the option --batch is needed to ensure no prompt
+    #gpg -o "$1.gpg" -c --batch --yes --passphrase $password  $1 &>/dev/null && rm -rf $1
+    
+    openssl aes-128-cbc -salt -in $1 -out $1.aes -k $password &>/dev/null && rm -rf $1
+    
+    echo "Encryption finished"
+    exit 1
+    
+}
+
+decrypt()
+{
+    #-f - specifies that the file being unarchived is being piped in.
+    #gpg --output $gzName --decrypt --batch --yes --passphrase $password $cipheredName 
+    
+    echo "Decrypting $1.aes ..."
+    openssl aes-128-cbc -d -salt -in $1.aes -out $1.tar.gz -k $password &>/dev/null
+    
+    #If you want to untar, uncomment the following line
+    #tar --acls --xattrs -xpf $gzName
+    
+    echo "Decryption's over."
+    exit 1
+}
+
+################
 # To check if is currently running as root or not
 
 if [[ $EUID -ne 0 ]] ; then
@@ -30,13 +78,13 @@ Parameters:\n
 \t > personal <personalDatasPath> - for personal backup\n
 \t > system - for system backup\n
 \t > encrypt <otherCommand> - to encrypt your backup\n
-\t > gpgDecrypt <fileWanted> - to decrypt backup\n
+\t > decrypt <fileWanted> - to decrypt backup\n
 ________________________________________________\n
 "
 
 
 # Parameters verification
-params="encrypt personal system gpgDecrypt"
+params="encrypt personal system decrypt"
 
 # "$params" != *"$1"* is to verify if parameter is available
 if [[ $# -gt 3 || $# -eq 0 || "$params" != *"$1"* ]] ; then
@@ -59,14 +107,14 @@ media=/run/media/
 execDir=$PWD
 from=$2
 
-password="yourpassword"
-
 
 # Scan to see if good hardrive are plugged
 cd $media
 
 # If no hardrive are plugged, then too bad, next time !
+
 if [[ ! $(ls) ]] ; then
+    clear
     echo "No hardrive are plugged."
     exit 0
 fi
@@ -79,10 +127,10 @@ for d in */ ; do
     
     # If backup found , stop looping across everything dumply.
     if [[ -n $newCd ]] ; then
-        echo "Backup found !"
+        echo "Backup folder's found !"
         break
     else
-        echo "No backup found."
+        echo "No backup folder's found."
         exit 0
     fi
 done
@@ -108,24 +156,24 @@ if [[ "$1" == "system" ]] || [[ "$1" == "encrypt" && "$2" == "system" ]] ; then
         echo "Backup $backupfile already exist."
         if [[ "$1" != "encrypt" ]] ; then
             exit 1
+        else
+            encrypt $backupfile
         fi
     fi
     
     if [[ "$1" == "encrypt" ]] ; then
-        echo "Encrypting $backupfile ..."
-        #From version 2 of GPG, the option --batch is needed to ensure no prompt
-        gpg -o "$backupfile.gpg" -c --batch --yes --passphrase $password  $backupfile &>/dev/null
+        encrypt $backupfile
+    else
+        echo "System integrity saved."
+        echo "You can go and check to $newCd dir."
+        exit 1
     fi
     
     
-    echo "System integrity saved."
-    echo "You can go and check to $newCd dir."
-    
-    exit 1
+
     
 elif [[ "$1" == "personal" ]] || [[ "$1" == "encrypt" && "$2" == "personal" ]] ; then
     backupfile="$newCd/$distro-personal-$date.tar.gz"
-    
     cd ${@: -1} && cd ..
     
     backupFrom=$(echo ${@: -1} | rev | cut -d "/" -f2 | rev)
@@ -138,50 +186,47 @@ elif [[ "$1" == "personal" ]] || [[ "$1" == "encrypt" && "$2" == "personal" ]] ;
         tar --exclude="lost+found" --exclude=".Trash*" --acls --xattrs -cpf $backupfile $backupFrom
     else
         echo "Backup $backupfile already exist."
-        if [[ "$1" != "encrypt" ]] ; then
-            exit 1
+        if confirm "Do you want to keep them ?"; then
+            if [[ "$2" != "encrypt" ]] ; then
+                exit 1
+            else
+                encrypt $backupfile
+            fi
+        else
+            rm -rf $backupfile
+            bash $execDir/backup.sh $@
         fi
     fi
     
     if [[ "$1" == "encrypt" ]] ; then
-        echo "Encrypting $backupfile ..."
-        #From version 2 of GPG, the option --batch is needed to ensure no prompt
-        gpg -o "$backupfile.gpg" -c --batch --yes --passphrase $password  $backupfile &>/dev/null
+        encrypt $backupfile
+    else
+        echo "Personal datas have been saved."
+        echo "You can go and check to $newCd dir."
+        exit 1
     fi
     
-    echo "Personal datas have been saved."
     
-    echo "You can go and check to $newCd dir."
-    
-    exit 1
-    
-elif [[ "$1" == "gpgDecrypt" ]] ; then
+elif [[ "$1" == "decrypt" ]] ; then
     echo "Trying to decrypt $2 data(s)."
     
-    gpged=$(find $PWD -maxdepth 2 -name *$2*)
+    ciphered=$(find $PWD -maxdepth 2 -name *$2*)
     
     # If file found , stop looping across everything dumply.
-    if [[ -n $gpged ]] ; then
-        gpgName=$(echo $gpged | rev | cut -d "/" -f1 | rev)
-        gzName=$(echo $gpgName | cut -d"." -f-3)
+    if [[ -n $ciphered ]] ; then
+        cipheredName=$(echo $ciphered | rev | cut -d "/" -f1 | rev)
+        gzName=$(echo $cipheredName | cut -d"." -f-3)
         
-        echo "$gpgName found !"
+        echo "$cipheredName found !"
         
-        #-f - specifies that the file being unarchived is being piped in.
-        gpg --output $gzName --decrypt --batch --yes --passphrase $password $gpgName 
+        decrypt $gzName
         
-        #If you want to untar, uncomment the following line
-        #tar --acls --xattrs -xpf $gzName
-        
-        echo "Done"
-        exit 1
     else
         echo "No $2 file found, nothing to decrypt."
         exit 0
     fi
     
 fi
-
 
 
 
