@@ -1,0 +1,6 @@
+/home/
+/etc/
+/var/
+/var/cache/
+/usr/local/
+/root/
