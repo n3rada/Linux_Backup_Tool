@@ -18,6 +18,11 @@ $sudo ./backup.sh encrypt personal /mnt/Datas/
 $sudo ./backup.sh decrypt personal
 >- If the personal backup exist, then decrypt it !
 
+## For system backup
+The system integrity backup system is based on the file "include-list.txt" for the files to be kept and "exclude-list.txt" for those to be ignored. 
+In my case, this is enough to fully restore my encrypted Arch Linux under LUKS-LVM with a backup of about 10 gigas.
+
+This link can help you choose: https://unix.stackexchange.com/questions/1067/what-directories-do-i-need-to-back-up
 
 ## Other things
 The password is entered in clear text in the backup creation file.
