@@ -1,10 +1,10 @@
-# backupTool
+# What is this ... ?
 Backup script written in bash for my system (Arch Linux) and personal datas.
 
 ## Project history
 This project was born after a bad manipulation and the removal of the "Luks" header from my personal hard drive. In short, sad story!
 
-## The tool
+## The toolbackupTool
 Here is a script to save the desired data if a .backUp folder is present in the removable disk.
 
 I use a specific .txt file where all excluded patterns are written down there (for system integrity save).
