@@ -11,7 +11,7 @@
 # !! Don't forget to use the exclude-list.txt !!
 #
 #--- By n3rada, free to use
-#--- January 2021
+#--- Januray 2021
 #####################################################
 clear
 ############### 
@@ -32,7 +32,7 @@ confirm()
 }
 
 # Generated with https://passwordsgenerator.net/
-password="Zc5uWBKc4LqsA2gZ"
+password="yourPasswordGeneratedHere"
 
 encrypt()
 {
@@ -151,13 +151,18 @@ if [[ "$1" == "system" ]] || [[ "$1" == "encrypt" && "$2" == "system" ]] ; then
     
     if [[ ! -e $backupfile ]] ; then
         echo "System integrity is in saving process ..."
-        tar --exclude-from='exclude-list.txt' --acls --xattrs -cpf $backupfile /
+        tar --exclude-from='exclude-list.txt' --acls --xattrs -v -cpf $backupfile -T include-list.txt
     else
         echo "Backup $backupfile already exist."
-        if [[ "$1" != "encrypt" ]] ; then
-            exit 1
+        if confirm "Do you want to keep them ?"; then
+            if [[ "$2" != "encrypt" ]] ; then
+                exit 1
+            else
+                encrypt $backupfile
+            fi
         else
-            encrypt $backupfile
+            rm -rf $backupfile
+            bash $execDir/backup.sh $@
         fi
     fi
     
