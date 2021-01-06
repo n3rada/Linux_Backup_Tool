@@ -4,3 +4,7 @@
 /var/cache/
 /usr/local/
 /root/
+/usr/share/backgrounds/
+/usr/share/fonts/
+/usr/share/themes/
+/usr/share/icons/
