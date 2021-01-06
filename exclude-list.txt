@@ -30,3 +30,4 @@
 *spool*
 .cache*
 *Cache*
+*.nuget*
