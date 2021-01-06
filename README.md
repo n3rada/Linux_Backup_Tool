@@ -20,7 +20,10 @@ $sudo ./backup.sh decrypt personal
 
 ## For system backup
 The system integrity backup system is based on the file "include-list.txt" for the files to be kept and "exclude-list.txt" for those to be ignored. 
-In my case, this is enough to fully restore my encrypted Arch Linux under LUKS-LVM with a backup of about 10 gigas.
+
+It's after several tests and backup analysis with the "ncdu -x" command (i.e. command to see the disk usage) that I came to create a rather complete exclusion list: "exclude-list.txt". I excluded ".config/VirtualBox/*" for example because it took almost 1 gigabyte because of the .iso.
+
+In my case, this is enough to fully restore my encrypted Arch Linux under LUKS-LVM with a backup of about 10 gigas (I have a lot of packages and i saved backgrounds too so ...).
 
 This link can help you choose: https://unix.stackexchange.com/questions/1067/what-directories-do-i-need-to-back-up
 
