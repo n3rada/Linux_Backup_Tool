@@ -155,7 +155,7 @@ if [[ "$1" == "system" ]] || [[ "$1" == "encrypt" && "$2" == "system" ]] ; then
     else
         echo "Backup $backupfile already exist."
         if confirm "Do you want to keep them ?"; then
-            if [[ "$2" != "encrypt" ]] ; then
+            if [[ "$1" != "encrypt" ]] ; then
                 exit 1
             else
                 encrypt $backupfile
